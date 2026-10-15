@@ -15,14 +15,15 @@ import org.json.JSONObject;
 
 // supabase helper for authentication
 public class SupabaseHelper {
-    private static final String SUPABASE_URL = "https://vzpjsmbpgqlanqzeiqsb.supabase.co";
-    private static final String SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6cGpzbWJwZ3FsYW5xemVpcXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NzI3MjUsImV4cCI6MjA3NTI0ODcyNX0.Iwz5iXkQxbACmYgJ6EB7bXuX76tLPYPJSZPF33N9k-s";
+    private static final String SUPABASE_URL = "https://agqhlhqyrsztzowmkdyy.supabase.co";
+    private static final String SUPABASE_API_KEY = "sb_publishable_Kc8i12J1daudqpmPjaaThw_H_HKROSf";
 
     private static final OkHttpClient client = new OkHttpClient();
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     public static void signUp(String displayName, String email, String password, Callback callback) {
-        String url = SUPABASE_URL + "/auth/v1/signup";
+        String url = SUPABASE_URL + "/auth/v1/signup?redirect_to=gabay%3A%2F%2Fauth%2Fconfirm";
+        Log.d("SupabaseHelper", "Sign-up URL: " + url);
 
         JSONObject json = new JSONObject();
         try {

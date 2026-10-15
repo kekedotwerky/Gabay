@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.gabay"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.gabay"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -98,6 +98,8 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.20.0")
+
     // glide
     implementation("com.github.bumptech.glide:glide:4.14.2")
     annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
@@ -106,7 +108,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.3.0")
     implementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")
 
-    implementation("io.ktor:ktor-client-okhttp:2.3.7")
     implementation("org.json:json:20240303")
 
     // for logging network requests
@@ -145,4 +146,19 @@ dependencies {
     // Card view dependency
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.cardview:cardview:1.0.0")
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("androidx.lifecycle:lifecycle-livedata-core:2.7.0")
+        force("androidx.lifecycle:lifecycle-livedata:2.7.0")
+        force("androidx.lifecycle:lifecycle-runtime:2.7.0")
+        force("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+        force("androidx.lifecycle:lifecycle-viewmodel:2.7.0")
+        force("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+        force("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0")
+        force("androidx.lifecycle:lifecycle-common:2.7.0")
+    }
+
+    exclude(group = "org.slf4j", module = "slf4j-api")
 }

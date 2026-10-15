@@ -11,7 +11,7 @@
     <item
         android:id="@+id/nav_GabAI"
         android:icon="@drawable/hello"
-        android:title="GabAI" />
+        android:title="SENYAS" />
 
 <!--    <item-->
 <!--        android:id="@+id/nav_Dictionary"-->

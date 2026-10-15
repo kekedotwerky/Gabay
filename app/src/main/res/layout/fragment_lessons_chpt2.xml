@@ -23,7 +23,7 @@
 
             <Button
                 android:id="@+id/c2lvl1"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senyas.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
@@ -75,7 +75,7 @@
 
             <Button
                 android:id="@+id/c2lvl2"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senyas.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
@@ -127,7 +127,7 @@
 
             <Button
                 android:id="@+id/c2lvl3"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senyas.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
@@ -179,7 +179,7 @@
 
             <Button
                 android:id="@+id/c2lvl4"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senyas.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
@@ -231,7 +231,7 @@
 
             <Button
                 android:id="@+id/c2lvl5"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senyas.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
@@ -283,7 +283,7 @@
 
             <Button
                 android:id="@+id/btn_chapter_quiz"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senyas.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"

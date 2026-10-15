@@ -24,7 +24,7 @@ tools:context=".fragments.pages.JourneyPage">
 
             <Button
                 android:id="@+id/lvl1"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senya.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
@@ -76,7 +76,7 @@ tools:context=".fragments.pages.JourneyPage">
 
             <Button
                 android:id="@+id/lvl2"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senyas.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
@@ -232,7 +232,7 @@ tools:context=".fragments.pages.JourneyPage">
 
             <Button
                 android:id="@+id/lvl5"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senyas.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
@@ -284,7 +284,7 @@ tools:context=".fragments.pages.JourneyPage">
 
             <Button
                 android:id="@+id/lvl6"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senyas.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
@@ -336,7 +336,7 @@ tools:context=".fragments.pages.JourneyPage">
 
             <Button
                 android:id="@+id/lvl7"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senyas.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
@@ -388,7 +388,7 @@ tools:context=".fragments.pages.JourneyPage">
 
             <Button
                 android:id="@+id/btn_chapter_quiz"
-                style="@style/Widget.Gabay.Button.White"
+                style="@style/Widget.Senyas.Button.White"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"

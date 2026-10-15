@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- Add permission for alarm to work after reboot -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-feature android:name="android.hardware.camera.any" />
@@ -29,45 +28,49 @@
         <activity
             android:name=".activities.AuthActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <!-- Deep link intent filter for auth callback -->
-            <intent-filter android:autoVerify="true"
+            <intent-filter
+                android:autoVerify="true"
                 tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="gabay"
+                    android:scheme="senyas"
                     android:host="auth"
                     android:path="/callback"
                     tools:ignore="AppLinkUrlError" />
             </intent-filter>
 
             <!-- Deep link intent filter for email confirmation -->
-            <intent-filter android:autoVerify="true"
+            <intent-filter
+                android:autoVerify="true"
                 tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="gabay"
+                    android:scheme="senyas"
                     android:host="auth"
                     android:path="/confirm"
                     tools:ignore="AppLinkUrlError" />
             </intent-filter>
 
             <!-- Deep link intent filter for password reset -->
-            <intent-filter android:autoVerify="true"
+            <intent-filter
+                android:autoVerify="true"
                 tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.action.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="gabay"
+                    android:scheme="senyas"
                     android:host="auth"
                     android:path="/reset"
                     tools:ignore="AppLinkUrlError" />
@@ -83,9 +86,11 @@
         <activity
             android:name=".activities.QuizActivity"
             android:exported="false" />
+
         <activity
             android:name=".activities.LessonActivity"
             android:exported="false" />
+
         <activity
             android:name=".activities.SettingsActivity"
             android:exported="false" />
@@ -95,15 +100,17 @@
             android:name="com.example.gabay.utils.NotificationReceiver"
             android:enabled="true"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <action android:name="gabay.app.DAILY_NOTIFICATION" />
+                <action android:name="senyas.app.DAILY_NOTIFICATION" />
             </intent-filter>
         </receiver>
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
     </application>
 </manifest>

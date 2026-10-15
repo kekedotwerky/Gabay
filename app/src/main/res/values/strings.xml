@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Gabay</string>
+    <string name="app_name">Senyas</string>
 
 
     <!-- Strings used for fragments for navigation -->
@@ -67,7 +67,7 @@
 
     <string name="support_feedback" >Support and feedback</string>
     <string name="contact_setting" >Contact Us</string>
-    <string name="rate_setting" >Rate Gabay</string>
+    <string name="rate_setting" >Rate Senyas</string>
 
     <string name="about_setting" >About</string>
     <string name="app_version" >App version</string>
@@ -250,7 +250,7 @@
 
     <!-- Chapter completion  -->
     <string name="final_completion_title">Congratulations! 🎉</string>
-    <string name="final_completion_message">You have successfully completed all available lessons and quizzes in Gabay. You\'ve taken a huge step in learning Filipino Sign Language. We\'re proud of you!</string>
+    <string name="final_completion_message">You have successfully completed all available lessons and quizzes in Senyas. You\'ve taken a huge step in learning Filipino Sign Language. We\'re proud of you!</string>
     <string name="final_completion_button">Complete</string>
 
 

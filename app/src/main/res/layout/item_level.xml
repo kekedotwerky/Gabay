@@ -10,7 +10,7 @@
 
     <Button
         android:id="@+id/btnLevel"
-        style="@style/Widget.Gabay.Button.White"
+        style="@style/Widget.Senyas.Button.White"
         android:layout_width="110dp"
         android:layout_height="110dp"
         android:background="@drawable/circular_button"

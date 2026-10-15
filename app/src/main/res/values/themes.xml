@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme -->
-    <style name="Base.Theme.Gabay" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.Senyas" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Lock the theme to light mode -->
         <item name="android:statusBarColor">@color/secondaryColor</item>
         <item name="android:navigationBarColor">@color/backgroundColor</item>
@@ -21,14 +21,16 @@
         <item name="android:colorBackground">@color/backgroundColor</item>
 
         <!-- Prevent Material3 from overriding button colors -->
-        <item name="materialButtonStyle">@style/Widget.Gabay.Button</item>
-        <item name="android:buttonStyle">@style/Widget.Gabay.Button</item>
+        <item name="materialButtonStyle">@style/Widget.Senyas.Button</item>
+        <item name="android:buttonStyle">@style/Widget.Senyas.Button</item>
     </style>
 
-    <style name="Theme.Gabay" parent="Base.Theme.Gabay" />
+    <style name="Theme.Senyas" parent="Base.Theme.Senyas" />
+    <style name="Theme.Gabay" parent="Base.Theme.Senyas" />
+    <style name="ThemeSenyas" parent="Base.Theme.Senyas" />
 
     <!-- Custom button style -->
-    <style name="Widget.Gabay.Button" parent="Widget.Material3.Button">
+    <style name="Widget.Senyas.Button" parent="Widget.Material3.Button">
         <!-- Background tint controls the button fill color -->
         <item name="backgroundTint">@color/secondaryColor</item>
         <!-- Text color -->
@@ -39,7 +41,7 @@
         <item name="android:elevation">8dp</item>
     </style>
 
-    <style name="Widget.Gabay.Button.White" parent="Widget.Gabay.Button">
+    <style name="Widget.Senyas.Button.White" parent="Widget.Senyas.Button">
         <item name="android:background">@drawable/circular_button_selector</item>
         <item name="android:textColor">@android:color/black</item>
     </style>

@@ -11,7 +11,7 @@ import io.github.jan.supabase.realtime.realtime
 import io.github.jan.supabase.auth.auth
 
 object SupabaseService {
-    private const val SUPABASE_URL = "https://vzpjsmbpgqlanqzeiqsb.supabase.co"
+        private const val SUPABASE_URL = "https://agqhlhqyrsztzowmkdyy.supabase.co"
     private const val SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6cGpzbWJwZ3FsYW5xemVpcXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NzI3MjUsImV4cCI6MjA3NTI0ODcyNX0.Iwz5iXkQxbACmYgJ6EB7bXuX76tLPYPJSZPF33N9k-s"
 
     val client: SupabaseClient = createSupabaseClient(
@@ -105,6 +105,8 @@ object SupabaseService {
 
     suspend fun updateUserProfile(profile: UserProfile): Boolean {
         return try {
+
+
             client.from("user_profiles").upsert(profile)
             true
         } catch (e: Exception) {

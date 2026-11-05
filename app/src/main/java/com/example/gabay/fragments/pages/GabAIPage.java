@@ -137,7 +137,7 @@ public class GabAIPage extends Fragment {
     private static final int FSL105_IMAGE_SIZE = 224;
     private final String[] FSL_BasicSigns_labels = {"A", "C", "I", "MAHAL KITA", "N"}; //
     private final String[] FSL_alphabet_labels = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "J", "Z"};
-    private final String[] FSL_numbers10_labels = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+    private final String[] FSL_numbers10_labels = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
     private int currentModelIndex = 0; // 0=Basic, 1=alphabet, 2=numbers
     private String[] currentLabels;
     private Button switchModelButton;
@@ -427,7 +427,7 @@ public class GabAIPage extends Fragment {
     }
 
 
-    private ByteBuffer convertBitmapToByteBuffer(Bitmap bitmap) {
+    private ByteBuffer convertBitmapToByteBuffer(Bitmap bitmap, boolean useCHW) {
         int imageSize = currentImageSize;
 
         // Calculate center crop dimensions
@@ -458,10 +458,23 @@ public class GabAIPage extends Fragment {
         processedBitmap.getPixels(pixels, 0, imageSize, 0, 0, imageSize, imageSize);
 
         // Normalize to [0, 1] range
-        for (int pixelValue : pixels) {
-            buffer.putFloat(((pixelValue >> 16) & 0xFF) / 255.0f);
-            buffer.putFloat(((pixelValue >> 8) & 0xFF) / 255.0f);
-            buffer.putFloat((pixelValue & 0xFF) / 255.0f);
+        if (useCHW) {
+            // The numbers model exports NCHW, so write planar R, then G, then B.
+            for (int pixelValue : pixels) {
+                buffer.putFloat(((pixelValue >> 16) & 0xFF) / 255.0f);
+            }
+            for (int pixelValue : pixels) {
+                buffer.putFloat(((pixelValue >> 8) & 0xFF) / 255.0f);
+            }
+            for (int pixelValue : pixels) {
+                buffer.putFloat((pixelValue & 0xFF) / 255.0f);
+            }
+        } else {
+            for (int pixelValue : pixels) {
+                buffer.putFloat(((pixelValue >> 16) & 0xFF) / 255.0f);
+                buffer.putFloat(((pixelValue >> 8) & 0xFF) / 255.0f);
+                buffer.putFloat((pixelValue & 0xFF) / 255.0f);
+            }
         }
         croppedBitmap.recycle();
         if (scaledBitmap != croppedBitmap) scaledBitmap.recycle();
@@ -596,7 +609,7 @@ public class GabAIPage extends Fragment {
                 }
     
     // Keep the existing model preprocessing unchanged.
-                ByteBuffer input = convertBitmapToByteBuffer(bitmap);
+                ByteBuffer input = convertBitmapToByteBuffer(bitmap, modelIndexForFrame == 2);
     
                 int outputSize =
                         modelForFrame.getOutputTensor(0).shape()[1];
@@ -1391,9 +1404,15 @@ public class GabAIPage extends Fragment {
 
             try (java.io.InputStream inputStream =
                          requireContext().getAssets().open(
-                                 "senyas_transactional_svm_v3.onnx")) {
+                                 "senyas_transactional_svm_v3.onnx");
+                 java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream()) {
 
-                byte[] modelBytes = inputStream.readAllBytes();
+                int nRead;
+                byte[] data = new byte[16384];
+                while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                    buffer.write(data, 0, nRead);
+                }
+                byte[] modelBytes = buffer.toByteArray();
 
                 transactionalOrtSession =
                         transactionalOrtEnvironment.createSession(

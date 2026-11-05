@@ -39,6 +39,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        mlModelBinding = false
     }
 
     kotlinOptions {
@@ -53,6 +54,7 @@ android {
     // FIXED: Use proper packaging syntax for Kotlin DSL
     packaging {
         jniLibs {
+            useLegacyPackaging = true
             pickFirsts += listOf(
                 "lib/x86/libmediapipe_jni.so",
                 "lib/x86_64/libmediapipe_jni.so",

@@ -427,8 +427,17 @@ public class GabAIPage extends Fragment {
     }
 
 
-    private ByteBuffer convertBitmapToByteBuffer(Bitmap bitmap, boolean useCHW) {
+    private ByteBuffer convertBitmapToByteBuffer(Bitmap bitmap, Interpreter model) {
         int imageSize = currentImageSize;
+        boolean useCHW = false;
+        if (model != null) {
+            try {
+                int[] shape = model.getInputTensor(0).shape();
+                if (shape.length == 4 && shape[1] == 3) {
+                    useCHW = true;
+                }
+            } catch (Exception ignored) {}
+        }
 
         // Calculate center crop dimensions
         int minDimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
@@ -459,7 +468,7 @@ public class GabAIPage extends Fragment {
 
         // Normalize to [0, 1] range
         if (useCHW) {
-            // The numbers model exports NCHW, so write planar R, then G, then B.
+            // Write planar R, then G, then B for NCHW models.
             for (int pixelValue : pixels) {
                 buffer.putFloat(((pixelValue >> 16) & 0xFF) / 255.0f);
             }
@@ -554,8 +563,9 @@ public class GabAIPage extends Fragment {
                 if (handLandmarker == null) {
                     Log.e("SENYAS_HAND", "Hand detector is not initialized");
     
-                    if (isAdded()) {
-                        requireActivity().runOnUiThread(() -> {
+                    androidx.fragment.app.FragmentActivity act = getActivity();
+                    if (isAdded() && act != null) {
+                        act.runOnUiThread(() -> {
                             if (isAdded() && predictionText != null) {
                                 predictionText.setText("Hand detector unavailable");
                                 predictionText.setVisibility(View.VISIBLE);
@@ -570,7 +580,7 @@ public class GabAIPage extends Fragment {
                         imageProxy.getImageInfo().getRotationDegrees()
                 );
     
-                boolean handDetected;
+                boolean handDetected = false;
     
                 try {
                     MPImage mpImage = new BitmapImageBuilder(detectionBitmap).build();
@@ -586,6 +596,9 @@ public class GabAIPage extends Fragment {
                             "Hand detected: " + handDetected
                     );
     
+                } catch (Throwable e) {
+                    Log.e("SENYAS_HAND", "Hand detection failed: " + e.getMessage());
+                    handDetected = false;
                 } finally {
                     if (detectionBitmap != bitmap
                             && !detectionBitmap.isRecycled()) {
@@ -595,8 +608,9 @@ public class GabAIPage extends Fragment {
     
     // Do not classify a frame when no hand is detected.
                 if (!handDetected) {
-                    if (isAdded()) {
-                        requireActivity().runOnUiThread(() -> {
+                    androidx.fragment.app.FragmentActivity act = getActivity();
+                    if (isAdded() && act != null) {
+                        act.runOnUiThread(() -> {
                             if (isAdded()
                                     && predictionText != null
                                     && currentModelIndex == modelIndexForFrame) {
@@ -608,8 +622,8 @@ public class GabAIPage extends Fragment {
                     return;
                 }
     
-    // Keep the existing model preprocessing unchanged.
-                ByteBuffer input = convertBitmapToByteBuffer(bitmap, modelIndexForFrame == 2);
+    // Dynamically detect tensor shape (NCHW vs NHWC) for any model.
+                ByteBuffer input = convertBitmapToByteBuffer(bitmap, modelForFrame);
     
                 int outputSize =
                         modelForFrame.getOutputTensor(0).shape()[1];
@@ -623,14 +637,17 @@ public class GabAIPage extends Fragment {
                                     + ", label count: " + labelsForFrame.length
                     );
     
-                    requireActivity().runOnUiThread(() -> {
-                        if (isAdded()
-                                && predictionText != null
-                                && currentModelIndex == modelIndexForFrame) {
-                            predictionText.setText("Model output mismatch");
-                            predictionText.setVisibility(View.VISIBLE);
-                        }
-                    });
+                    androidx.fragment.app.FragmentActivity act = getActivity();
+                    if (isAdded() && act != null) {
+                        act.runOnUiThread(() -> {
+                            if (isAdded()
+                                    && predictionText != null
+                                    && currentModelIndex == modelIndexForFrame) {
+                                predictionText.setText("Model output mismatch");
+                                predictionText.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    }
     
                     return;
                 }
@@ -715,8 +732,9 @@ public class GabAIPage extends Fragment {
                                 + ", matching frames: " + matchingCount
                 );
     
-                if (isAdded()) {
-                    requireActivity().runOnUiThread(() -> {
+                androidx.fragment.app.FragmentActivity act = getActivity();
+                if (isAdded() && act != null) {
+                    act.runOnUiThread(() -> {
                         if (!isAdded()
                                 || predictionText == null
                                 || currentModelIndex != modelIndexForFrame) {
@@ -870,63 +888,72 @@ public class GabAIPage extends Fragment {
         }
     
         private void startCamera() {
+            if (getContext() == null || !isAdded()) return;
+
             ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
-                    ProcessCameraProvider.getInstance(requireContext());
-    
+                    ProcessCameraProvider.getInstance(getContext());
+
             cameraProviderFuture.addListener(() -> {
                 try {
+                    if (getContext() == null || !isAdded() || getView() == null) {
+                        return;
+                    }
+
                     cameraProvider = cameraProviderFuture.get();
                     cameraProvider.unbindAll();
-    
+
                     Preview preview = new Preview.Builder().build();
-    
+
                     // Use currentLensFacing instead of hardcoded front camera
                     CameraSelector cameraSelector = new CameraSelector.Builder()
                             .requireLensFacing(currentLensFacing)
                             .build();
-    
+
                     ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
                             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                             .build();
-    
+
                     imageAnalysis.setAnalyzer(cameraExecutor, this::analyzeFrame);
-    
-                    preview.setSurfaceProvider(cameraPreview.getSurfaceProvider());
-                    cameraProvider.bindToLifecycle(getViewLifecycleOwner(), cameraSelector, preview, imageAnalysis);
-    
-                    Log.d("CameraX", "Camera started successfully with lens facing: " + currentLensFacing);
-    
+
+                    if (cameraPreview != null && cameraPreview.getSurfaceProvider() != null) {
+                        preview.setSurfaceProvider(cameraPreview.getSurfaceProvider());
+                        cameraProvider.bindToLifecycle(getViewLifecycleOwner(), cameraSelector, preview, imageAnalysis);
+                        Log.d("CameraX", "Camera started successfully with lens facing: " + currentLensFacing);
+                    }
+
                 } catch (Exception e) {
                     Log.e("CameraX", "Error starting camera: " + e.getMessage(), e);
-                    Toast.makeText(requireContext(), "Error starting camera", Toast.LENGTH_LONG).show();
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), "Error starting camera", Toast.LENGTH_LONG).show();
+                    }
                 }
-            }, ContextCompat.getMainExecutor(requireContext()));
+            }, ContextCompat.getMainExecutor(getContext()));
         }
-    
+
         @Override
         public void onPause() {
             super.onPause();
             stopCameraSafely();
         }
-    
+
         @Override
         public void onDestroy() {
             super.onDestroy();
             stopCameraSafely();
-    
+
             if (cameraExecutor != null) {
                 cameraExecutor.shutdown();
             }
-    
+
             // Close all models
             closeModelSafely(tfliteBasicSigns);
             closeModelSafely(tfliteFSLAlphabet);
             closeModelSafely(tfliteNumbers10);
             closeModelSafely(currentModel);
-    
+
             Log.d("GabAIPage", "All 3 models closed");
         }
-    
+
         private void closeModelSafely(Interpreter model) {
             if (model != null) {
                 try {
@@ -936,17 +963,17 @@ public class GabAIPage extends Fragment {
                 }
             }
         }
-    
+
         @Override
         public void onStop() {
             super.onStop();
             stopCameraSafely();
         }
-    
+
         private void stopCameraSafely() {
-            if (!isAdded()) return;
+            if (getContext() == null) return;
             try {
-                ProcessCameraProvider cameraProvider = ProcessCameraProvider.getInstance(requireContext()).get();
+                ProcessCameraProvider cameraProvider = ProcessCameraProvider.getInstance(getContext()).get();
                 cameraProvider.unbindAll();
                 Log.d("CameraX", "Camera stopped safely");
             } catch (Exception e) {
@@ -1427,7 +1454,7 @@ public class GabAIPage extends Fragment {
                             + ", Outputs: "
                             + transactionalOrtSession.getOutputNames());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             android.util.Log.e(
                     "SENYAS_TRANSACTIONAL",
                     "Failed to load ONNX model",

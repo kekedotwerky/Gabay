@@ -18,7 +18,7 @@ android {
 
         // Add this for native libraries
         ndk {
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
         }
     }
 
@@ -135,14 +135,16 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.3.1")
     implementation("androidx.camera:camera-view:1.3.1")
 
-    // MediaPipe - FIXED: Use specific stable version instead of latest.release
-    implementation("com.google.mediapipe:tasks-vision:0.10.14")
+    // MediaPipe - FIXED: Use specific stable version
+    implementation("com.google.mediapipe:tasks-vision:0.10.14") {
+        exclude(group = "com.google.ai.edge.litert", module = "litert-api")
+    }
 
     // Required for MediaPipe - UPDATED version
     implementation("com.google.guava:guava:32.1.3-android")
 
-    // TensorFlow Lite - UPDATED to newer version
-    implementation("org.tensorflow:tensorflow-lite:2.14.0")
+    // TensorFlow Lite 2.17.0 for opcode version 12
+    implementation("org.tensorflow:tensorflow-lite:2.17.0")
     implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
 
     // Card view dependency
@@ -163,4 +165,5 @@ configurations.all {
     }
 
     exclude(group = "org.slf4j", module = "slf4j-api")
+    exclude(group = "com.google.ai.edge.litert", module = "litert-api")
 }

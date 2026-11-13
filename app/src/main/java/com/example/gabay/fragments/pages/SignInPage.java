@@ -578,10 +578,20 @@ public class SignInPage extends Fragment {
 
     private void saveAuthTokens(String accessToken, String refreshToken) {
         try {
-            SharedPreferences.Editor editor = securePreferences.edit();
-            editor.putString("access_token", accessToken);
-            editor.putString("refresh_token", refreshToken);
-            editor.apply();
+            if (securePreferences != null) {
+                SharedPreferences.Editor editor = securePreferences.edit();
+                editor.putString("access_token", accessToken);
+                editor.putString("refresh_token", refreshToken);
+                editor.apply();
+            }
+
+            if (getActivity() != null) {
+                SharedPreferences authPrefs = getActivity().getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor authEditor = authPrefs.edit();
+                authEditor.putString("access_token", accessToken);
+                authEditor.putString("refresh_token", refreshToken);
+                authEditor.apply();
+            }
         } catch (Exception e) {
             Log.e("SignInPage", "Error saving auth tokens: " + e.getMessage());
         }

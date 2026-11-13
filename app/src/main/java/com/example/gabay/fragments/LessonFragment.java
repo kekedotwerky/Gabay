@@ -148,14 +148,16 @@ public class LessonFragment extends Fragment {
                 int completedCount = SupabaseJavaService.getCompletedLevelsCount(chapterNumber);
                 boolean alreadyCompleted = completedCount >= levelNumber;
 
-                requireActivity().runOnUiThread(() -> {
-                    setupVideoPlayback(lesson, alreadyCompleted, chapterNumber);
-                    btnNext.setEnabled(alreadyCompleted);
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        setupVideoPlayback(lesson, alreadyCompleted, chapterNumber);
+                        btnNext.setEnabled(alreadyCompleted);
 
-                    if (alreadyCompleted) {
-                        Log.d("LessonDebug", "Level " + levelNumber + " already completed — Next enabled.");
-                    }
-                });
+                        if (alreadyCompleted) {
+                            Log.d("LessonDebug", "Level " + levelNumber + " already completed — Next enabled.");
+                        }
+                    });
+                }
             }).start();
         });
 
@@ -297,14 +299,30 @@ public class LessonFragment extends Fragment {
                       " completed. Completed count: " + completedCount + "/" + maxLevels + 
                       ". Is chapter completed: " + isChapterCompleted);
                 
-                requireActivity().runOnUiThread(() -> {
-                    if (isChapterCompleted) {
-                        // Chapter is fully completed - redirect to quiz immediately
-                        // Note: Congratulatory message will be shown in HomePage when user returns
-                        Log.d("LessonDebug", "Chapter " + chapterNumber + " completed! Redirecting to quiz...");
-                        openQuizActivity(chapterNumber);
-                    } else {
-                        // Not fully completed yet, just finish the activity with result
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        if (isChapterCompleted) {
+                            // Chapter is fully completed - redirect to quiz immediately
+                            // Note: Congratulatory message will be shown in HomePage when user returns
+                            Log.d("LessonDebug", "Chapter " + chapterNumber + " completed! Redirecting to quiz...");
+                            openQuizActivity(chapterNumber);
+                        } else {
+                            // Not fully completed yet, just finish the activity with result
+                            if (getActivity() != null) {
+                                Intent resultIntent = new Intent();
+                                resultIntent.putExtra("completed_level", levelNumber);
+                                resultIntent.putExtra("level_completed", true);
+                                resultIntent.putExtra("score", 100);
+                                getActivity().setResult(android.app.Activity.RESULT_OK, resultIntent);
+                                getActivity().finish();
+                            }
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                Log.e("LessonDebug", "Error checking chapter completion: " + e.getMessage());
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
                         if (getActivity() != null) {
                             Intent resultIntent = new Intent();
                             resultIntent.putExtra("completed_level", levelNumber);
@@ -313,20 +331,8 @@ public class LessonFragment extends Fragment {
                             getActivity().setResult(android.app.Activity.RESULT_OK, resultIntent);
                             getActivity().finish();
                         }
-                    }
-                });
-            } catch (Exception e) {
-                Log.e("LessonDebug", "Error checking chapter completion: " + e.getMessage());
-                requireActivity().runOnUiThread(() -> {
-                    if (getActivity() != null) {
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("completed_level", levelNumber);
-                        resultIntent.putExtra("level_completed", true);
-                        resultIntent.putExtra("score", 100);
-                        getActivity().setResult(android.app.Activity.RESULT_OK, resultIntent);
-                        getActivity().finish();
-                    }
-                });
+                    });
+                }
             }
         }).start();
     }
@@ -428,12 +434,14 @@ public class LessonFragment extends Fragment {
                 if (completedCount >= levelNumber) {
                     Log.d("ProgressDebug", "Level " + levelNumber + " already completed — skipping update.");
                     // Still trigger UI update for real-time refresh
-                    requireActivity().runOnUiThread(() -> {
-                        if (progressViewModel != null && isAdded()) {
-                            progressViewModel.updateChapterProgress(chapterNumber, levelNumber);
-                            progressViewModel.triggerProgressUpdate();
-                        }
-                    });
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            if (progressViewModel != null && isAdded()) {
+                                progressViewModel.updateChapterProgress(chapterNumber, levelNumber);
+                                progressViewModel.triggerProgressUpdate();
+                            }
+                        });
+                    }
                     return;
                 }
 
@@ -445,7 +453,8 @@ public class LessonFragment extends Fragment {
                     return;
                 }
 
-                requireActivity().runOnUiThread(() -> {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
                     // ✅ Double-check in case activity was destroyed mid-call
                     if (!isAdded() || getActivity() == null) {
                         Log.w("ProgressDebug", "Fragment not attached during UI update — safely skipped.");
@@ -479,6 +488,7 @@ public class LessonFragment extends Fragment {
                         Log.d("ProgressDebug", "Result intent set with level " + levelNumber + " completed");
                     }
                 });
+            }
 
             } catch (Exception e) {
                 Log.e("ProgressDebug", "Error in markLevelsUpToCurrent: " + e.getMessage());
